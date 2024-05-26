@@ -98,7 +98,7 @@ energy_consumption = {
 }
 
 # Layout for the main content
-col1, col2, col3 = st.columns([1, 2, 2])
+col1, col2, col3 = st.columns([1, 3, 3])
 
 # Placeholder image to represent the building
 with col1:

@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 # Set style for Seaborn
 sns.set(style="whitegrid")
 
+# Display the logo
+st.image("assets/logo.png", width=200)
+
 # Title
 st.title("BIM4Energy Case Study Explorer")
 
@@ -39,21 +42,46 @@ building_operation = st.sidebar.slider("Improved building operation (%)", 0, 100
 
 # Base energy consumption data (dummy data)
 base_energy_data = {
-    "Heating": 100,
-    "Cooling": 50,
-    "Other": 30
+    "Dormitory": {"Heating": 120, "Cooling": 60, "Other": 40},
+    "Office": {"Heating": 150, "Cooling": 80, "Other": 50},
+    "Hotel": {"Heating": 200, "Cooling": 100, "Other": 70},
+    "Hospital": {"Heating": 180, "Cooling": 90, "Other": 60},
+    "School": {"Heating": 130, "Cooling": 70, "Other": 50}
 }
+
+# Climate factors (dummy data)
+climate_factors = {
+    "Vilnius": 1.2,
+    "Berlin": 1.0,
+    "Paris": 0.9,
+    "Madrid": 0.8,
+    "Rome": 0.85
+}
+
+# Orientation factors (dummy data)
+orientation_factors = {
+    "North": 1.1,
+    "South": 0.9,
+    "East": 1.0,
+    "West": 1.05
+}
+
+# Get base consumption for selected building type
+base_consumption = base_energy_data[building_type]
+
+# Adjust base consumption for climate and orientation
+adjusted_base_consumption = {key: value * climate_factors[climate_scenario] * orientation_factors[orientation] for key, value in base_consumption.items()}
 
 # Calculate improved energy consumption based on selected strategies
 improved_energy_data = {
-    "Heating": base_energy_data["Heating"] * (1 - heating_system / 100) * (1 - thermal_envelope / 100),
-    "Cooling": base_energy_data["Cooling"] * (1 - ventilation_system / 100) * (1 - thermal_envelope / 100),
-    "Other": base_energy_data["Other"] * (1 - building_operation / 100)
+    "Heating": adjusted_base_consumption["Heating"] * (1 - heating_system / 100) * (1 - thermal_envelope / 100),
+    "Cooling": adjusted_base_consumption["Cooling"] * (1 - ventilation_system / 100) * (1 - thermal_envelope / 100),
+    "Other": adjusted_base_consumption["Other"] * (1 - building_operation / 100)
 }
 
 # Data for the bar chart
 energy_data = {
-    "Base Case": base_energy_data,
+    "Base Case": adjusted_base_consumption,
     "Improved": improved_energy_data
 }
 
@@ -65,27 +93,36 @@ investment_cost = {
 
 # Calculate energy consumption per year/m2
 energy_consumption = {
-    "Base Case": sum(base_energy_data.values()),
+    "Base Case": sum(adjusted_base_consumption.values()),
     "Improved": sum(improved_energy_data.values())
 }
 
+# Layout for the main content
+col1, col2, col3 = st.columns([1, 2, 2])
+
+# Placeholder image to represent the building
+with col1:
+    st.image("https://via.placeholder.com/400", caption="Example building")
+
 # Display energy consumption bar chart
-st.subheader("Energy consumption (kWh/m²/y)")
-energy_df = pd.DataFrame(energy_data).T
-fig, ax = plt.subplots()
-energy_df.plot(kind="bar", stacked=True, ax=ax, color=sns.color_palette("muted"))
-ax.set_ylabel("Energy Consumption (kWh/m²/y)")
-ax.set_title("Energy Consumption by Type")
-st.pyplot(fig)
+with col2:
+    st.subheader("Energy consumption (kWh/m²/y)")
+    energy_df = pd.DataFrame(energy_data).T
+    fig, ax = plt.subplots()
+    energy_df.plot(kind="bar", stacked=True, ax=ax, color=sns.color_palette("muted"))
+    ax.set_ylabel("Energy Consumption (kWh/m²/y)")
+    ax.set_title("Energy Consumption by Type")
+    st.pyplot(fig)
 
 # Display investment cost vs. energy cost
-st.subheader("Investment cost vs. energy cost")
-investment_df = pd.DataFrame(list(investment_cost.items()), columns=["Case", "Cost"])
-fig, ax = plt.subplots()
-sns.barplot(x="Case", y="Cost", data=investment_df, palette="muted", ax=ax)
-ax.set_ylabel("Cost")
-ax.set_title("Investment Cost Comparison")
-st.pyplot(fig)
+with col3:
+    st.subheader("Investment cost vs. energy cost")
+    investment_df = pd.DataFrame(list(investment_cost.items()), columns=["Case", "Cost"])
+    fig, ax = plt.subplots()
+    sns.barplot(x="Case", y="Cost", data=investment_df, palette="muted", ax=ax)
+    ax.set_ylabel("Cost")
+    ax.set_title("Investment Cost Comparison")
+    st.pyplot(fig)
 
 # Additional features
 st.sidebar.header("Additional Features")
@@ -102,9 +139,6 @@ tool_advice = st.sidebar.checkbox("Tool advice on best strategy")
 carbon_savings = 20  # Placeholder value
 st.subheader("Carbon emission savings")
 st.write(f"Estimated carbon emission savings: {carbon_savings} kg CO2/m²/y")
-
-# Placeholder image to represent the building
-st.image("https://via.placeholder.com/400", caption="Example building")
 
 st.write("""
 This is a mockup of the BIM4Energy Case Study Explorer. 

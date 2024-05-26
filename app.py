@@ -11,7 +11,7 @@ st.set_page_config(layout="wide")
 sns.set(style="whitegrid")
 
 # Display the logo
-st.image("assets/logo.png", width=200)
+st.image("assets/logo.png", width=400)
 
 # Title
 st.title("BIM4Energy Case Study Explorer")

@@ -100,21 +100,12 @@ energy_consumption = {
     "Improved": sum(improved_energy_data.values())
 }
 
-# Mapping building types to images
-building_images = {
-    "Dormitory": "assets/dormitory.png",
-    "Office": "assets/office.png",
-    "Hotel": "assets/hotel.png",
-    "Hospital": "assets/hospital.png",
-    "School": "assets/school.png"
-}
-
 # Layout for the main content
 col1, col2, col3 = st.columns([1, 3, 3])
 
 # Placeholder image to represent the building
 with col1:
-    st.image(building_images[building_type], caption=building_type)
+    st.image("https://via.placeholder.com/400", caption="Example building")
 
 # Display energy consumption bar chart
 with col2:
